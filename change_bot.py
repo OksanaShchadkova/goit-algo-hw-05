@@ -11,41 +11,30 @@ def input_error(func):
     return inner
 
 
+@input_error
 def parse_input(user_input: str):
     parts = user_input.strip().split()
-    if not parts:
-        raise ValueError("No command entered.")
     cmd, *args = parts
     return cmd.lower(), args
 
 
 @input_error
 def add_contact(args, contacts):
-    if len(args) != 2:
-        raise ValueError
-    name, phone = args
+    name, phone = args  # ValueError буде автоматично, якщо не 2 аргументи
     contacts[name] = phone
     return f"Contact '{name}' added with phone number '{phone}'."
 
 
 @input_error
 def change_contact(args, contacts):
-    if len(args) != 2:
-        raise ValueError
     name, phone = args
-    if name not in contacts:
-        raise KeyError
-    contacts[name] = phone
+    contacts[name] = phone  # KeyError буде автоматично, якщо name не існує
     return f"Contact '{name}' updated with new phone number '{phone}'."
 
 
 @input_error
 def show_phone(args, contacts):
-    if len(args) != 1:
-        raise IndexError
     name = args[0]
-    if name not in contacts:
-        raise KeyError
     return f"{name}: {contacts[name]}"
 
 
@@ -64,11 +53,12 @@ def main():
     while True:
         user_input = input("Enter a command: ")
 
-        try:
-            command, args = parse_input(user_input)
-        except ValueError:
-            print("Please enter a command.")
+        result = parse_input(user_input)
+        if isinstance(result, str):
+            print(result)
             continue
+
+        command, args = result
 
         if command in ("exit", "close"):
             print("Good bye!")
